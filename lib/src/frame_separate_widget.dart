@@ -68,6 +68,10 @@ class FrameSeparateWidgetState extends State<FrameSeparateWidget> {
   }
 
   void transformWidget() {
+    // only the first time
+    if(result == widget.child){
+      return;
+    }
     SchedulerBinding.instance.addPostFrameCallback((Duration t) {
       FrameSeparateTaskQueue.instance!.scheduleTask(() {
         if (mounted)
