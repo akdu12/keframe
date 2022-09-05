@@ -23,6 +23,8 @@ class FrameSeparateTaskQueue {
   bool _hasRequestedAnEventLoopCallback = false;
   int maxTaskSize = 0;
 
+  int _taskPerFrame = 3;
+
   static FrameSeparateTaskQueue? _instance;
 
   static FrameSeparateTaskQueue? get instance {
@@ -87,7 +89,11 @@ class FrameSeparateTaskQueue {
   Future<void> _runTasks() async {
     _hasRequestedAnEventLoopCallback = false;
     await SchedulerBinding.instance.endOfFrame;
-    if (await handleEventLoopCallback()) _ensureEventLoopCallback();
+    int counter = _taskPerFrame;
+    while(await handleEventLoopCallback() && counter>0){
+      counter--;
+    }
+    if (_taskQueue.isNotEmpty) _ensureEventLoopCallback();
   }
 
   void shuffleTask(bool Function(TaskEntry taskEntry) condition) {
